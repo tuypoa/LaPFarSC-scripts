@@ -1,4 +1,4 @@
-package br.ufrj.lapfarsc.virtualscreening;
+package br.lapfarsc.virtualscreening.init;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import br.ufrj.lapfarsc.dto.ArquivosDTO;
+import br.lapfarsc.virtualscreening.dto.ArquivosDTO;
 
 public class InitOrganizarNumeracao {
 

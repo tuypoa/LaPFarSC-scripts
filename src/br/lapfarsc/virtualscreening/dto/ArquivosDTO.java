@@ -1,4 +1,4 @@
-package br.ufrj.lapfarsc.dto;
+package br.lapfarsc.virtualscreening.dto;
 
 public class ArquivosDTO implements Comparable<ArquivosDTO>{
 
