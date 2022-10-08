@@ -1,4 +1,4 @@
-package br.ufrj.lapfarsc.init;
+package br.ufrj.lapfarsc.virtualscreening;
 
 import java.io.BufferedReader;
 import java.io.File;
