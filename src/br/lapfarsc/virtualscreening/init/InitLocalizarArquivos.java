@@ -1,4 +1,4 @@
-package br.ufrj.lapfarsc.virtualscreening;
+package br.lapfarsc.virtualscreening.init;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -14,15 +14,16 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import br.ufrj.lapfarsc.dto.MoleculaBiblioDTO;
+import br.lapfarsc.virtualscreening.dto.MoleculaBiblioDTO;
 
 public class InitLocalizarArquivos {
 
 	
-	public static String BIBLIO_PATH = "/home/tuy/Desktop/Guilherme/Farmacia/LaPFarSC/biblio2700/";
+	public static String BIBLIO_PATH = "/home/LaPFarSC/biblio2700/";
 	
 	public static void main(String[] args) throws IOException {
-				
+		System.out.println("InitLocalizarArquivos: ");
+		
 		File path = new File(BIBLIO_PATH);
 		if(!path.exists()) {
 			System.out.println("--> PATH DOES NOT EXIST: "+path.getAbsolutePath());
