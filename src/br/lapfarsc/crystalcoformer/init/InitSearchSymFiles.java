@@ -1,4 +1,4 @@
-package br.lapfarsc.crystalcoformer;
+package br.lapfarsc.crystalcoformer.init;
 
 import java.io.BufferedReader;
 import java.io.File;
