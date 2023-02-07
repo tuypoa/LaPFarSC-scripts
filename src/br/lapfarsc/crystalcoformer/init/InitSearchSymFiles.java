@@ -29,6 +29,7 @@ public class InitSearchSymFiles {
 		for (File file : listFiles) {
 			System.out.println(file.getPath());
 		}
+		System.out.println("FIM.");
 	}
 	
 	public static ArrayList<File> buscarArquivosOutputPW(File pasta, int nivel) throws Exception{
