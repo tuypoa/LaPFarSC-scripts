@@ -136,7 +136,21 @@ public class InitSearchSymFiles {
 							+ "#[LaPFarSC] converted by xcrysden-script: "+PWO2XSF+" \n"
 							+ "#[LaPFarSC] converted by command obabel \n"
 							+ "";
-					gravarMetadadosCIF(metadados, destPath.getPath()+"/"+nomeFile+".cif");
+					
+					String cifMeta = "_symmetry_cell_setting           triclinic\n"
+							+ "_symmetry_space_group_name_H-M   'P 1'\n"
+							+ "_symmetry_Int_Tables_number      1\n"
+							+ "_space_group_name_Hall           'P 1'\n"
+							+ "loop_\n"
+							+ "_symmetry_equiv_pos_site_id\n"
+							+ "_symmetry_equiv_pos_as_xyz\n"
+							+ "1 x,y,z\n";
+					
+					File of = new File(destPath.getPath()+"/"+nomeFile+".cif") ;
+					String conteudoOK = loadTextFile(of);
+					conteudoOK = conteudoOK.substring(0, conteudoOK.indexOf("_cell_")) + cifMeta +  conteudoOK.substring(conteudoOK.indexOf("_cell_"), conteudoOK.length());
+					conteudoOK = metadados + conteudoOK;
+					saveTextFile(of, conteudoOK);
 					
 					xsf.delete();
 				}
@@ -212,12 +226,6 @@ public class InitSearchSymFiles {
 		}
 		return listOutput;
 	}	
-		
-	public static void gravarMetadadosCIF(String metadados, String outputFile) throws Exception {
-		File of = new File(outputFile) ;
-		String conteudoOK = metadados + loadTextFile(of);
-		saveTextFile(of, conteudoOK);
-	}
 
 	
 	public static String loadTextFile(File fileName) throws Exception {
