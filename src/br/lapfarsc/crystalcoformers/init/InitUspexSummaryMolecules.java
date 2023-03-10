@@ -147,6 +147,10 @@ public class InitUspexSummaryMolecules {
 					File arquivoPwOutput = new File(pathCalFold.getAbsoluteFile() + "/ERROR-OUTPUT-Gen1-Ind"+st.getId()+"-Step1");
 					if(arquivoPwOutput.exists()) {
 						String arqPw = loadTextFile(arquivoPwOutput);
+						if(arqPw.lastIndexOf("total energy        ")!=-1) {
+							String enthalpy = arqPw.substring( arqPw.indexOf("=", arqPw.lastIndexOf("total energy        "))+1, arqPw.indexOf("Ry", arqPw.lastIndexOf("total energy        ") ) ).trim();
+							st.setEnthalpy( Double.parseDouble( enthalpy ) * 13.6057039763  ); //1 Rydberg constant	13.6057039763 eV
+						}
 						//unit-cell volume          =   33785.3729 (a.u.)^3
 						int idxVol = arqPw.indexOf("unit-cell volume");
 						st.setVolume( Double.parseDouble( arqPw.substring( arqPw.indexOf("=",idxVol)+1 , arqPw.indexOf("(",idxVol) ).trim() ) );
@@ -247,7 +251,15 @@ public class InitUspexSummaryMolecules {
 		saveTextFile( new File(pathNova+"/SUMMARY.txt"), dataSum.toString());
 		
 		//gerar grafico Seaborn Python
-		
+		/*ProcessBuilder builder = new ProcessBuilder("/bin/sh","-c","");
+        Process p = builder.start();
+        int exitCode = p.waitFor();
+		if (exitCode != 0) {
+			System.err.println(path.getPath());
+			System.err.println(exitCode);
+			System.err.println("----------------------------------");
+		}
+		*/
 		System.out.println("FIM.");
 	}
 	
