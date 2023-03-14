@@ -205,23 +205,47 @@ public class InitUspexSummaryMolecules {
 						//converter Output em CIF
 						st.setArquivoCif( converterOutput2CIF(arquivoPwOutput, pathNova) ); 
 						//System.out.println(st.getArquivoCif());
-						String atoms = st.getArquivoCif().substring( st.getArquivoCif().indexOf("_atom_site_occupancy")+"_atom_site_occupancy".length()  );
-						String[] atomsLin = atoms.split("\n");
-						HashMap<String, Integer> freqA = new HashMap<String, Integer>();
-						int i = 0;
-						for (String s : atomsLin) {
-							if(s.length()>30) {
-								String atom = s.substring(11,18).toUpperCase().trim();
-								if(freqA.containsKey(atom)) {
-									freqA.put(atom, freqA.get(atom)+1);
-								}else {
-									freqA.put(atom, 1);
+						if(st.getArquivoCif()==null) {
+							String atoms = arqPw.substring( arqPw.indexOf("     site n.     atom "), arqPw.indexOf("     number of k points"));
+							String[] atomsLin = atoms.split("\n");
+							HashMap<String, Integer> freqA = new HashMap<String, Integer>();
+							int i = 0;
+							for (String s : atomsLin) {
+								if(s.indexOf("tau(")!=-1) {
+									String atom = s.substring(18,25).toUpperCase().trim();
+									if(freqA.containsKey(atom)) {
+										freqA.put(atom, freqA.get(atom)+1);
+									}else {
+										freqA.put(atom, 1);
+									}
+									i++;
 								}
-								i++;
 							}
+							if(st.getCountAtoms()!=i) {
+								System.out.println("--> "+arquivoPwOutput.getAbsolutePath());
+								System.out.println("--> Atoms count: "+st.getCountAtoms()+" <> "+i);
+							}
+							countRatioMolecules(st, freqA, mol1DTO.getFreqAtoms(), mol2DTO.getFreqAtoms());
+							
+						}else {
+							String atoms = st.getArquivoCif().substring( st.getArquivoCif().indexOf("_atom_site_occupancy")+"_atom_site_occupancy".length()  );
+							String[] atomsLin = atoms.split("\n");
+							HashMap<String, Integer> freqA = new HashMap<String, Integer>();
+							int i = 0;
+							for (String s : atomsLin) {
+								if(s.length()>30) {
+									String atom = s.substring(11,18).toUpperCase().trim();
+									if(freqA.containsKey(atom)) {
+										freqA.put(atom, freqA.get(atom)+1);
+									}else {
+										freqA.put(atom, 1);
+									}
+									i++;
+								}
+							}
+							st.setCountAtoms(i);
+							countRatioMolecules(st, freqA, mol1DTO.getFreqAtoms(), mol2DTO.getFreqAtoms());
 						}
-						st.setCountAtoms(i);
-						countRatioMolecules(st, freqA, mol1DTO.getFreqAtoms(), mol2DTO.getFreqAtoms());
 					}
 				}
 			}
@@ -328,14 +352,17 @@ public class InitUspexSummaryMolecules {
         Process p = builder.start();
         int exitCode = p.waitFor();
         //System.out.println(exitCode);
-		if (exitCode != 0) {
+        File xsf = new File(path.getPath()+"/"+nomeFile+".xsf");
+		String xsfConteudo = loadTextFile(xsf);
+        
+        if (exitCode != 0 || xsfConteudo.length() <= 10 ) {
 			System.err.println("pwo2xsf.sh ERROR--------------------");
 			System.err.println(path.getPath());
 			System.err.println(exitCode);
 			System.err.println("----------------------------------");
+			return null;
 		}
 		
-		File xsf = new File(path.getPath()+"/"+nomeFile+".xsf");
 		if(xsf.exists()) {
 			//converter XSF -> CIF
 			//obabel -ixsf teste2.xsf -ocif -Oteste2.cif
