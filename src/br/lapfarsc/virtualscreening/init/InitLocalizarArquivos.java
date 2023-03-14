@@ -21,7 +21,7 @@ public class InitLocalizarArquivos {
 	
 	public static String BIBLIO_PATH = "/home/LaPFarSC/biblio2700/";
 	
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws Exception {
 		System.out.println("InitLocalizarArquivos: ");
 		
 		File path = new File(BIBLIO_PATH);
@@ -533,7 +533,7 @@ public class InitLocalizarArquivos {
 	}
 	
 	
-	public static String loadTextFile(File file) throws IOException {
+	public static String loadTextFile(File file) throws Exception {
 		FileReader fr = null;
 	    BufferedReader br = null;
 		try{

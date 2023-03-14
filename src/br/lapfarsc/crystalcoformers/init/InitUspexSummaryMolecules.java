@@ -20,8 +20,8 @@ import br.lapfarsc.crystalcoformers.dto.StructureUspexDTO;
 
 public class InitUspexSummaryMolecules {
 
-	public static String PATH_XCRYSDEN = "/home/tuy/Documents/xcrysden-1.6.2-bin-shared/scripts";
-	
+	//public static String PATH_XCRYSDEN = "/home/tuy/Documents/xcrysden-1.6.2-bin-shared/scripts";
+	public static String PATH_XCRYSDEN = "/usr/share/xcrysden/scripts";
 	
 	public static void main(String[] args) throws Exception {
 		System.out.println("InitUspexSummaryMolecules: ");
