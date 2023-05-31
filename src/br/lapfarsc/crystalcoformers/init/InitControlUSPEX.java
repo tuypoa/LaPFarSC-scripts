@@ -33,6 +33,7 @@ public class InitControlUSPEX {
 		File pathMol2 = new File(rootPath+"/MOL_2");
 		File pathCalFold = new File(rootPath+"/CalcFold1");
 		
+		String ratio = null ;
 		do {
 			
 			if(!path.exists()) {
@@ -44,7 +45,6 @@ public class InitControlUSPEX {
 				//return;
 			}
 			
-			String ratio = "" ;
 			//System.out.println(path.getAbsolutePath());
 			
 			MoleculeUspexDTO mol1DTO = parseDataMoleculeUspexDTO( loadTextFile(pathMol1) );
@@ -95,11 +95,13 @@ public class InitControlUSPEX {
 					countRatioMolecules(st, freqA, mol1DTO.getFreqAtoms(), mol2DTO.getFreqAtoms());
 					
 					
-					if(!ratio.equals("ratio: "+st.getCountMol1()+" : "+st.getCountMol2() )){
-						ratio = "ratio: "+st.getCountMol1()+" : "+st.getCountMol2() ;
+					if(ratio == null ){
+						ratio = "Ratio ["+st.getCountMol1()+" : "+st.getCountMol2() +"] ";
 						System.out.println();
 						System.out.print( ratio );
-					}else {
+					}
+					
+					if(ratio != null ){
 						System.out.print( "." );
 					}
 					
@@ -135,7 +137,7 @@ public class InitControlUSPEX {
 							//while ((line=buf.readLine())!=null) {
 					        System.out.println("kill "+pid +" / ratio = "+st.getRatio());
 					        //}
-					        ratio = "";
+					        ratio = null;
 				        }
 					}
 				}
