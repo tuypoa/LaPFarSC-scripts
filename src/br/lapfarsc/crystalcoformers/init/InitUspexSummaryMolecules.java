@@ -91,6 +91,10 @@ public class InitUspexSummaryMolecules {
 				break;
 			}	
 		}
+		
+		//TODO REMOVER DA LISTA OS IDS COM ARQUIVO: ERROR-OUTPUT-Gen1-Ind1-Step1, ERROR-OUTPUT-Gen1-Ind2-Step1
+		
+		
 		int cifDataFindsymSTRUC = 1;
 		for (StructureUspexDTO st : listaStruc) {
 			int idx = log.indexOf("Structure"+st.getId()+" step1 at CalcFold1");
@@ -129,6 +133,19 @@ public class InitUspexSummaryMolecules {
 					if(arquivoOut.exists()) {
 						String arqOut = loadTextFile(arquivoOut);
 						String listOut = arqOut.substring( arqOut.indexOf("\n", arqOut.indexOf("ID   Origin") ) );
+						while(listOut.indexOf("ID   Origin")!=-1 || listOut.indexOf("-----------------")!=-1) {
+							int fimList = listOut.indexOf("-----------------");
+							StringBuilder sb = new StringBuilder();
+							if(fimList!=-1) {
+								sb.append( listOut.substring(0, fimList) );
+								sb = new StringBuilder( sb.substring(0, sb.lastIndexOf("\n")) );
+							}
+							int iniList = listOut.indexOf("ID   Origin");
+							if(iniList!=-1) {
+								sb.append( listOut.substring( listOut.indexOf("\n", iniList) ) );
+							}
+							listOut = sb.toString();
+						}
 						String[] linOut = listOut.split("\n");
 						String lin = linOut[cifDataFindsymSTRUC];
 						String eVVol = lin.substring( lin.indexOf("]")+1, lin.indexOf("[", lin.indexOf("]")+1) );
@@ -142,6 +159,9 @@ public class InitUspexSummaryMolecules {
 					//System.out.println( st.getSymLine() );
 					cifDataFindsymSTRUC++;
 				}else {
+					
+					/* 
+					//IGNORE 
 					// /CalcFold1/ERROR-OUTPUT-Gen1-Ind1-Step1
 					st.setRelaxDone(Boolean.FALSE);
 					File arquivoPwOutput = new File(pathCalFold.getAbsoluteFile() + "/ERROR-OUTPUT-Gen1-Ind"+st.getId()+"-Step1");
@@ -180,7 +200,7 @@ public class InitUspexSummaryMolecules {
 						}
 						countRatioMolecules(st, freqA, mol1DTO.getFreqAtoms(), mol2DTO.getFreqAtoms());
 						//System.out.println(st.getRatio());
-					}
+					}*/
 				}
 				
 				if(idxnext==-1 && st.getCountAtoms()==null) {
@@ -253,20 +273,21 @@ public class InitUspexSummaryMolecules {
 		
 		DecimalFormat df = new DecimalFormat("0.0000");
 		StringBuilder dataSum = new StringBuilder();
-		dataSum.append("id;spacegroup;ratio;mol1;mol2;atoms;relax;volume;enthalpy;output").append("\n");
+		dataSum.append("id;spacegroup;ratio;mol1;mol2;atoms;relax;volume;energy;output").append("\n");
 		for (StructureUspexDTO st : listaStruc) {
-			dataSum.append( st.getId() ).append(";");
-			dataSum.append( st.getSpaceGroup() ).append(";");
-			dataSum.append( st.getRatio() ).append(";");
-			dataSum.append( st.getCountMol1() ).append(";");
-			dataSum.append( st.getCountMol2() ).append(";");
-			dataSum.append( st.getCountAtoms() ).append(";");
-			dataSum.append( st.getRelaxDone() ).append(";");
-			dataSum.append( st.getVolume()==null?"null":df.format( st.getVolume() ) ).append(";");
-			dataSum.append( st.getEnthalpy()==null?"null":df.format( st.getEnthalpy() ) ).append(";");
-			dataSum.append( st.getSymLine() );
-			dataSum.append("\n");
-			
+			if(st.getCountMol1()!=null) {
+				dataSum.append( st.getId() ).append(";");
+				dataSum.append( st.getSpaceGroup() ).append(";");
+				dataSum.append( st.getRatio() ).append(";");
+				dataSum.append( st.getCountMol1() ).append(";");
+				dataSum.append( st.getCountMol2() ).append(";");
+				dataSum.append( st.getCountAtoms() ).append(";");
+				dataSum.append( st.getRelaxDone() ).append(";");
+				dataSum.append( st.getVolume()==null?"null":df.format( st.getVolume() ) ).append(";");
+				dataSum.append( st.getEnthalpy()==null?"null":df.format( st.getEnthalpy() ) ).append(";");
+				dataSum.append( st.getSymLine() );
+				dataSum.append("\n");
+			}
 			if(st.getArquivoCif()!=null) {
 				saveTextFile( new File(pathNova+"/id"+st.getId()+"_ratio"+st.getRatio().replaceAll(":", "-")+".cif"), st.getArquivoCif());
 			}
@@ -294,14 +315,18 @@ public class InitUspexSummaryMolecules {
 			String key1 = null;
 			String key2 = null;
 			for (String s : set) {
-				if(key1==null) {
-					key1 = s;
-				}else if(key2==null) {
-					key2 = s;
-				}else {
-					break;
+				if(!"H".equals(s)) {
+					if(key1==null) {
+						key1 = s;
+					}else if(key2==null) {
+						key2 = s;
+					}else {
+						break;
+					}
 				}
 			}
+			//System.out.println(key1);
+			//System.out.println(key2);
 			Integer a1 = mol1.get(key1);
 			a1 = (a1==null?0:a1);
 			Integer b1 = mol2.get(key1);
@@ -315,27 +340,32 @@ public class InitUspexSummaryMolecules {
 			b2 = (b2==null?0:b2);
 			Integer c2 = freqA.get(key2);
 			c2 = (c2==null?0:c2);
-			
+			/*System.out.println(a1);
+			System.out.println(a2);
+			System.out.println(b1);
+			System.out.println(b2);
+			*/
 			int delta = a1*b2 - a2*b1;
 			int a = ( c1*b2 - c2*b1 ) / delta;
 			int b = ( a1*c2 - a2*c1 ) / delta;
 
 			st.setCountMol1(a);
 			st.setCountMol2(b);
-			double x = a;
-			double y = b;
-			double resto;
-			do{
-		        resto = x % y;
-		        x = y;
-		        y = resto;
-		    } while(resto!=0);
-			//System.out.println("-------");
-			//System.out.println("ratio: "+a+" : "+b );
-			//System.out.println("mdc: "+ x );
 			if(a==0 || b==0) {
 				st.setRatio(a+":"+b);
 			}else {
+				double x = a;
+				double y = b;
+				double resto;
+				do{
+			        resto = x % y;
+			        x = y;
+			        y = resto;
+			    } while(resto!=0);
+				//System.out.println("-------");
+				//System.out.println("ratio: "+a+" : "+b );
+				//System.out.println("mdc: "+ x );
+				
 				st.setRatio(((int)(a/x))+":"+((int)(b/x)));
 			}
 			//System.out.println(st.getRatio());
